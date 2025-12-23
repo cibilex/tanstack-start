@@ -1,7 +1,21 @@
 import { Link } from '@tanstack/react-router'
+import { ChevronDown, ChevronRight, Home, Menu, Network, SquareFunction, StickyNote, X } from 'lucide-react'
 
 import { useState } from 'react'
-import { ChevronDown, ChevronRight, Home, Menu, Network, SquareFunction, StickyNote, X } from 'lucide-react'
+import type { LinkOptions } from '@tanstack/react-router'
+
+type LinkItem = LinkOptions & { label: string }
+
+const navLinks: Array<LinkItem> = [
+  {
+    label: 'Home',
+    to: '/',
+  },
+  {
+    label: 'Users',
+    to: '/users',
+  },
+]
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
@@ -22,6 +36,18 @@ export default function Header() {
             <img src="/tanstack-word-logo-white.svg" alt="TanStack Logo" className="h-10" />
           </Link>
         </h1>
+        {navLinks.map((link) => (
+          <Link
+            key={link.to}
+            to={link.to}
+            className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2"
+            activeProps={{
+              className: 'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
+            }}
+          >
+            {link.label}
+          </Link>
+        ))}
       </header>
 
       <aside
