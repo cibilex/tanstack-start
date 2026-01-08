@@ -37,7 +37,7 @@ export const Route = createFileRoute('/users/')({
 function UserList() {
   const { data } = useSuspenseQuery(usersQuery)
 
-  return <div>User count: {data.email}</div>
+  return <div>User count: {data}</div>
 }
 
 function RouteComponent() {

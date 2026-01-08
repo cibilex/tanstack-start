@@ -75,7 +75,7 @@ export const Route = createFileRoute('/')({
 })
 ```
 
-- As you know react projects are using `Strict` mode in development, that is trigger renders twice.Tanstack `src/client.tsx` file is optional and not defined by default.Default file is like below:https://tanstack.com/start/latest/docs/framework/react/guide/client-entry-point. So if we want to delete StrictMode,just declare the file and delete `StrictMode` component.
+- As you know react projects are using `Strict` mode in development, that is trigger renders twice.Tanstack `src/client.tsx` file is optional and not defined by default.[Default file](https://tanstack.com/start/latest/docs/framework/react/guide/client-entry-point) is like below. So if we want to delete StrictMode,just declare the file and delete `StrictMode` component.
 
 ```ts
 // src/client.tsx
@@ -123,7 +123,7 @@ function RouteComponent() {
 
 - Tanstack Start’ta execution model’in özü şudur: Kod `isomorphictir` (aynı dosya hem client hem server’da çalışabilir) ama her kod her yerde çalışmamalıdır. DB, file system, secret, token, enum, private logic server’da kalmalı, browser’a sızmamalıdır.
 
-- `createServerFn`: Her yerden çağrılabilir ama sadece server’da çalışır. Client’tan çağrıldığında otomatik olarak HTTP isteğine dönüşür (RPC).
+- `createServerFn`: Her yerden çağrılabilir ama sadece server’da çalışır. Client’tan çağrıldığında otomatik olarak HTTP isteğine dönüşür, that is Remote Procedure Call(RPC).
 - `createServerOnlyFn`:: Yanlışlıkla client’ta çağrılırsa runtime error fırlatır. Güvenlik için birebir.
 - `createClientOnlyFn /  <ClientOnly>`: Server’da render edilmeye çalışılırsa patlar. window, localStorage gibi browser API’leri için.
 - `useSuspenseQuery`: runs on the server during SSR when its data is required and will be streamed to the client as it resolves.
@@ -166,8 +166,11 @@ function UsersPage() {
 
 - **Senaryo 1: /users sayfasında refresh**: Bu bir initial request olduğu için kontrol server’dadır. Server sayfayı render eder ancak useQuery server tarafında fetch başlatmaz, yani listUsers çalışmaz. Sayfa client’a hydrate edildikten sonra useQuery devreye girer ve listUsers bir serverFn olduğu için client otomatik olarak /\_serverFn/<encoded> endpoint’ine HTTP request atar. Server fonksiyonu çalıştırır ve sonucu client’a döner.
 - **Senaryo 2: Başka bir sayfadan /users’a gitmek**: Bu tamamen client-side navigation’dır. Server render sürecine dahil olmaz. useQuery çalıştığında TanStack, queryFn’in bir serverFn olduğunu anlar ve yine /\_serverFn/<encoded> endpoint’ine HTTP request oluşturur. Server fonksiyonu çalıştırır ve sonucu client’a gönderir.
-  RPC ile doğru fonksiyon nasıl bulunur?
-  RPC ile oluşan istekte jwt token bulunur. Bunu decode ettiğimizde Client’ın attığı istekteki encoded path, hangi dosyadaki hangi export’un çalıştırılacağını gibi bilgiler bulunur ve böylece fonksiyon tanımlanır.
+
+RPC ile doğru fonksiyon nasıl bulunur?
+
+- RPC ile oluşan istekte jwt token bulunur. Bunu decode ettiğimizde Client’ın attığı istekteki encoded path, hangi dosyadaki hangi export’un çalıştırılacağını gibi bilgiler bulunur ve böylece fonksiyon tanımlanır.
+
 - Örnek istek: `http://localhost:3000/_serverFn/eyJmaWxlIjoiL0BpZC9zcmMvcm91dGVzL3VzZXJzL2luZGV4LnRzeD90c3Itc3BsaXQ9Y29tcG9uZW50JnRzci1kaXJlY3RpdmUtdXNlLXNlcnZlcj0iLCJleHBvcnQiOiJsaXN0VXNlcnNfY3JlYXRlU2VydmVyRm5faGFuZGxlciJ9?createServerFn`
 - Decode edilmiş versiyonu:
 
@@ -254,9 +257,7 @@ isomorphicFn()
 - Client bundle oluşturulurken:
   - `server()` tarafı bundle’a girmez, sadece `.client()` kodu kalır.
     `npm run build` ile `.output` dosyasında 2 folder bulunur.
-  1. `client`: Client bundle içerir.
-  2. `server`: Server bundle içerir.
-     Yukarıdaki kodta `npm run build` dediğinizde `.output/server` içerindeki kısımda
+- Yukarıdaki kodta `npm run build` dediğinizde `.output/server` içerindeki kısımda
 
 ```ts
 if (typeof window === 'undefined') console.log('hi from server')
@@ -322,7 +323,7 @@ function CurrentTime() {
 }
 ```
 
-- TanStack Start + Vite kullandığımızda environment variable’lar otomatik olarak iki dünyaya ayrılır: client ve server. Bu ayrımı TanStack yapmaz, Vite yapar ve TanStack buna %100 uyum sağlar.`VITE_` prefix’i olan her değişken client bundle’a gömülür, olmayanlar sadece server’da kalır. Yani bu bir runtime kontrolü değil, build-time bir karardır.TanStack Start server condition olmadan hiçbir sensitive environment variable kullanma.
+- TanStack Start + Vite kullandığımızda environment variable’lar otomatik olarak iki dünyaya ayrılır: client ve server.`VITE_` prefix’i olan her değişken client bundle’a gömülür, olmayanlar sadece server’da kalır. Yani bu bir runtime kontrolü değil, build-time bir karardır.TanStack Start server condition olmadan hiçbir sensitive environment variable kullanma.
 
 ```bash
 VITE_BASE_URL=http://localhost:5173
